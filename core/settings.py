@@ -201,10 +201,9 @@ FTP_UPLOAD_DIR = '//'
 
 
 AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
-    'django_keycloak.auth.backends.KeycloakAuthorizationCodeBackend',)
+    "core.custom-auth-backend.CustomBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
 
 # KEYCLOAK_OIDC_PROFILE_MODEL = 'django_keycloak.OpenIdConnectProfile'
 
