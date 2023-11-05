@@ -1,0 +1,95 @@
+{% extends "layouts/trips_base.html" %}
+
+{% block title %} New Report {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+{% load crispy_forms_tags %}
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-3 mb-lg-0">
+        <h1 class="h4">Add New Trip</h1>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="card border-0 shadow components-section">
+        <div class="card-body">
+            <form method="get">
+                {% csrf_token %}
+                <div class="row mb-5">
+                    <div class="col-sm-3">
+                        <label>Driver</label>
+                        <input type="text" class="form-control" disabled value="{{trip.driver.fullname}}">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Vehicle</label>
+                        <input type="text" class="form-control" disabled value="{{trip.vehicle}}">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Created Time</label>
+                        <input type="text" class="form-control" disabled value="{{trip.created_at}}">
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-sm-3">
+                        <label>Starting Location</label>
+                        <input type="text" class="form-control" disabled value="{{trip.starting_location}}">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Destination</label>
+                        <input type="text" class="form-control" disabled value="{{trip.destination}}">
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-sm-3">
+                        <label>Check_Out</label>
+                        <input type="text" class="form-control" disabled value="{{trip.check_out}}">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Check_In</label>
+                        <input type="text" class="form-control" disabled value="{{trip.check_in}}">
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-sm-3">
+                        <label>Approval Status</label>
+                        <input type="text" class="form-control" disabled value="{{trip.approval_request}}">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Verified By</label>
+                        <input type="text" class="form-control" disabled value="{{trip.verified_by}}">
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-sm-6">
+                        <label>Status</label>
+                        <input type="text" class="form-control text-md-center" disabled value="{{trip.status}}">
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-sm-6">
+                        <label>Note</label>
+                        <textarea rows="4" class="form-control" disabled>{{trip.note}}</textarea>
+                    </div>
+                    <div class="col-sm-3">
+                        <br>
+                        <br>
+                        <a href="{% url 'trips:list' %}" class="btn btn-gray-300">Back</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+{% block javascripts %}
+
+</script>
+
+{% endblock javascripts %}

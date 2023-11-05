@@ -1,0 +1,62 @@
+{% extends "layouts/assignment_base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+{% load crispy_forms_tags %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row mb-5">
+        <div class="col-sm-5">
+        {{ form|crispy }}
+        <input type="file" name="file" />
+    </div>
+    </div>
+    <div class="row mb-5">
+        <p id="upload-status"></p> <!-- Add an ID to the element that displays the upload status -->
+    <div class="col-sm-5">
+        <button type="submit" class="btn btn-success">Upload</button>
+    </div>
+</div>
+</form>
+
+<script>
+    // Add JavaScript code to track the uploading progress
+    const form = document.querySelector('form');
+    const uploadStatus = document.getElementById('upload-status');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+
+        const request = new XMLHttpRequest();
+        request.open('POST', '/assignment/upload/'); // Replace with your actual upload endpoint
+
+        request.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+                const progress = Math.round((event.loaded / event.total) * 100);
+                uploadStatus.textContent = `Uploading: ${progress}%`;
+            }
+        });
+
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE) {
+                if (request.status === 200) {
+                    uploadStatus.textContent = 'Upload complete';
+                } else {
+                    uploadStatus.textContent = 'Upload failed';
+                }
+            }
+        };
+
+        request.send(formData);
+    });
+</script>
+
+{% endblock %}

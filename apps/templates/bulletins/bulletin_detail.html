@@ -1,0 +1,31 @@
+{% extends "layouts/bulletins_base.html" %}
+
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+<head>
+    <title>Bulletin Detail</title>
+</head>
+<body>
+    <h1>Bulletin Detail</h1>
+    <p>Type: {{ bulletin.type }}</p>
+    <p>Time: {{ bulletin.time }}</p>
+    <p>Created At: {{ bulletin.created_at }}</p>
+    <p>Resources: {{ bulletin.resources }}</p>
+    <h2>Editors:</h2>
+    <ul>
+    {% for editor in bulletin.editors.all %}
+        <li>{{ editor.fullname }}</li>
+    {% empty %}
+        <li>No editors assigned.</li>
+    {% endfor %}
+    </ul>
+</body>
+
+{% endblock content %}

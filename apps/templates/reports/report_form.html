@@ -1,0 +1,97 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} New Report {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+{% load crispy_forms_tags %}
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-3 mb-lg-0">
+        <h1 class="h4">Add New Report</h1>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="card border-0 shadow components-section">
+        <div class="card-body">
+        <form method="post" >
+            {% csrf_token %}
+    <div class="row mb-5">
+        <div class="col-sm-4">
+            <label for="fullname">Name</label>
+            <input type="text" class="form-control"  disabled value="{{user.get_full_name}}" name="fullname">
+        </div>
+        <div class="col-sm-4">
+            <label for="job_title">Job Title</label>
+            <input type="text" class="form-control"  disabled value="{{job_title}}" name="job_title">
+        </div>
+        <div class="col-sm-4">
+            <label for="department">Department</label>
+            <input type="text" class="form-control"  disabled value="{{department}}" name="department">
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-sm-4">
+            {{form.task_type|as_crispy_field}}
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-sm-8">
+            {{form.description|as_crispy_field}}
+        </div>
+    </div>
+    <div class="row mb-10" >
+        <div class="col-md-12 text-center">
+            <a href="{% if 'list' in request.path %} {% url 'reports:list' %} {% else %} {% url 'reports:main' %} {% endif %} " class="btn btn-gray-300">Cancel</a>
+            <input type="submit" class="btn btn-success"  >
+        </div>
+    </div>
+    </form>
+    </div>
+    </div> 
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        
+        $("#successAlert").on("click", function() {
+            
+            if($("#form1")[0].checkValidity()) {
+                var title = $("#form1 [name='title']").val();
+
+            const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-primary',
+                cancelButton: 'btn btn-gray'
+            },
+            buttonsStyling: false
+        });
+
+            swalWithBootstrapButtons.fire({
+                icon: 'success',
+                title: 'Success alert',
+                text: 'Your work has been saved',
+                showConfirmButton: true,
+                timer: 1500
+            });
+            document.getElementById("form1").reset();
+
+
+                // ajax here
+            } else {
+                $("#form1")[0].reportValidity();
+            }
+
+            
+        });
+    }) -->
+</script>
+
+{% endblock javascripts %}
