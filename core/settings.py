@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'apps.bulletins',
     'apps.assignment',
     'formtools',
-    'django_keycloak.apps.KeycloakAppConfig',
+
 
     
 ]
@@ -71,7 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_keycloak.middleware.BaseKeycloakMiddleware',
+
 ]
 
 ROOT_URLCONF = 'core.urls'
