@@ -14,13 +14,13 @@ from .forms import *
 from .models import *
 
 
-class CreateReport(LoginRequiredMixin,View):
-    success_url = reverse_lazy('reports:main')
-    template_name = 'reports/report_form.html'
+class CreateTask(LoginRequiredMixin,View):
+    success_url = reverse_lazy('task:main')
+    template_name = 'task/task_form.html'
 
 
     def get(self,request):
-        form=CreateReportForm()
+        form=CreateTaskForm()
         x = get_object_or_404 (Job_title,employee__user=self.request.user)
         context={'form':form}
         context['job_title'] = x
@@ -28,7 +28,7 @@ class CreateReport(LoginRequiredMixin,View):
         return render(request,self.template_name,context)
 
     def post(self, request):
-        form = CreateReportForm(request.POST)
+        form = CreateTaskForm(request.POST)
         if not form.is_valid():
             context = {'form': form}
             return render(request, self.template_name, context)
@@ -41,8 +41,8 @@ class CreateReport(LoginRequiredMixin,View):
 
     
 
-class ReportListView(LoginRequiredMixin, View):
-    template_name = 'reports/report_list.html'
+class TaskListView(LoginRequiredMixin, View):
+    template_name = 'task/task_list.html'
     paginate_by = 10
 
     def get(self, request):
@@ -55,11 +55,11 @@ class ReportListView(LoginRequiredMixin, View):
                 query.add(Q(owner__user__first_name__icontains=strval), Q.OR)
                 query.add(Q(owner__user__last_name__icontains=strval), Q.OR)
                 query.add(Q(owner__user=self.request.user), Q.AND)
-                report_list = Report.objects.filter(query).select_related().order_by('-created_at')
+                task_list = Task.objects.filter(query).select_related().order_by('-created_at')
             else:
-                report_list = Report.objects.filter(owner__user=self.request.user).order_by('-created_at')
+                task_list = Task.objects.filter(owner__user=self.request.user).order_by('-created_at')
                 
-            paginator = Paginator(report_list, self.paginate_by)
+            paginator = Paginator(task_list, self.paginate_by)
             page_number = request.GET.get('page')
             page_obj = paginator.get_page(page_number)
             
@@ -105,7 +105,7 @@ class ReportListView(LoginRequiredMixin, View):
     
 class DirectorView(LoginRequiredMixin, View):
     paginate_by = 10
-    template_name = 'reports/director_list.html'
+    template_name = 'task/director_list.html'
 
     def get(self, request):
         search_value = request.GET.get('search')
@@ -115,14 +115,14 @@ class DirectorView(LoginRequiredMixin, View):
         x = get_object_or_404(Job_title, employee__user=self.request.user)
         
         if form.is_valid():
-            report_list = form.filter_reports().exclude(owner__user=request.user)
-            report_list = report_list.filter(task_type__job_title=x)
+            task_list = form.filter_task().exclude(owner__user=request.user)
+            task_list = task_list.filter(task_type__job_title=x)
         else:
-            report_list = Report.objects.filter(task_type__job_title=x).exclude(owner__user=request.user).order_by('-created_at')
+            task_list = Task.objects.filter(task_type__job_title=x).exclude(owner__user=request.user).order_by('-created_at')
         
         
         
-        paginator = Paginator(report_list, self.paginate_by)
+        paginator = Paginator(task_list, self.paginate_by)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 

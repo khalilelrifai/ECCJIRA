@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} New Report {% endblock %}
+{% block title %} New Task {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
@@ -11,7 +11,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="mb-3 mb-lg-0">
-        <h1 class="h4">Report Details</h1>
+        <h1 class="h4">Task Details</h1>
     </div>
 </div>
 <div class="container-fluid">
@@ -23,44 +23,44 @@
                     <div class="col-sm-4">
 
                         <label for="fullname">Name</label>
-                        <input type="text" class="form-control" disabled value="{{report.owner}}" name="fullname">
+                        <input type="text" class="form-control" disabled value="{{task.owner}}" name="fullname">
 
                     </div>
                     <div class="col-sm-4">
                         <label for="job_title">Job Title</label>
-                        <input type="text" class="form-control" disabled value="{{report.owner.job_title}}"
+                        <input type="text" class="form-control" disabled value="{{task.owner.job_title}}"
                             name="job_title">
                     </div>
                     <div class="col-sm-4">
                         <label for="department">Department</label>
-                        <input type="text" class="form-control" disabled value="{{report.owner.job_title.department}}"
+                        <input type="text" class="form-control" disabled value="{{task.owner.job_title.department}}"
                             name="department">
                     </div>
                 </div>
                 <div class="row mb-5">
                     <div class="col-sm-4">
                         <label for="department">Task Type</label>
-                        <input type="text" class="form-control" disabled value="{{report.task_type}}" name="task_type">
+                        <input type="text" class="form-control" disabled value="{{task.task_type}}" name="task_type">
                     </div>
                 </div>
                 <div class="row mb-5">
                     <div class="col-sm-8">
                         <label for="department">Task Type</label>
                         <textarea rows="4" class="form-control" disabled
-                            name="description">{{report.description}}</textarea>
+                            name="description">{{task.description}}</textarea>
                     </div>
                 </div>
                 <div class="row mb-10">
                     <div class="col-md-12 text-center">
-                        {% if report.owner.user == user %}
-                        <a href="{% if 'director' in request.path %}{% url 'reports:director' %}{%else%}{% url 'reports:list' %}{%endif%}"
+                        {% if task.owner.user == user %}
+                        <a href="{% if 'director' in request.path %}{% url 'task:director' %}{%else%}{% url 'task:list' %}{%endif%}"
                             class="btn btn-gray-300">Cancel</a>
-                        <a href="{% url 'reports:edit' report.id %}" class="btn btn-success" id="successAlert">Edit </a>
-                        <a href="{% url 'reports:delete' report.id %}" class="btn btn-danger"
+                        <a href="{% url 'task:edit' task.id %}" class="btn btn-success" id="successAlert">Edit </a>
+                        <a href="{% url 'task:delete' task.id %}" class="btn btn-danger"
                             id="successAlert">Delete</a>
-                        {% elif report.status == "Pending" and report.owner.user != user and user in group  %}
-                        <a href="{% url 'reports:director' %}" class="btn btn-gray-300">Cancel</a>
-                        <a href="{% url 'reports:approve' report.id %}" class="btn btn-success"
+                        {% elif task.status == "Pending" and task.owner.user != user and user in group  %}
+                        <a href="{% url 'task:director' %}" class="btn btn-gray-300">Cancel</a>
+                        <a href="{% url 'task:approve' task.id %}" class="btn btn-success"
                             id="successAlert">Approve</a>
                         {% endif %}
                     </div>

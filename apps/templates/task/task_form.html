@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} New Report {% endblock %}
+{% block title %} New Task {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
@@ -47,7 +47,7 @@
     </div>
     <div class="row mb-10" >
         <div class="col-md-12 text-center">
-            <a href="{% if 'list' in request.path %} {% url 'reports:list' %} {% else %} {% url 'reports:main' %} {% endif %} " class="btn btn-gray-300">Cancel</a>
+            <a href="{% if 'list' in request.path %} {% url 'task:list' %} {% else %} {% url 'task:main' %} {% endif %} " class="btn btn-gray-300">Cancel</a>
             <input type="submit" class="btn btn-success"  >
         </div>
     </div>

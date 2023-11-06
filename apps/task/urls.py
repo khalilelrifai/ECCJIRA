@@ -7,14 +7,14 @@ from django.views.generic.base import TemplateView
 
 from . import views
 
-app_name='reports'
+app_name='task'
 
 urlpatterns = [
 
 
-    path('', login_required(TemplateView.as_view(template_name='reports/main.html')), name='main'),
-    path('create',views.CreateReport.as_view(),name='create'),
-    path('list',views.ReportListView.as_view(),name='list'),
+    path('', login_required(TemplateView.as_view(template_name='task/main.html')), name='main'),
+    path('create',views.CreateTask.as_view(),name='create'),
+    path('list',views.TaskListView.as_view(),name='list'),
     # path('list/detail/<int:pk>',views.ReportDetailView.as_view(),name='L-detail'),
     # path('director/detail/<int:pk>',views.ReportDetailView.as_view(),name='D-detail'),
     # path('list/edit/<int:pk>',views.ReportUpdateView.as_view(),name='edit'),

@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.home',                                    # Enable the inner home (home)
-    'apps.reports',
+    'apps.task',
     'allauth',                                      # OAuth new
     'allauth.account',                              # OAuth new
     'allauth.socialaccount',                        # OAuth new 
@@ -51,11 +51,8 @@ INSTALLED_APPS = [
     "sslserver",
     'crispy_forms',
     'django.contrib.humanize' ,
-    'apps.trips',
-    'apps.bulletins',
-    'apps.assignment',
     'formtools',
-    "crispy_bootstrap4",
+
 
 
     
