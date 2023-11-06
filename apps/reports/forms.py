@@ -7,12 +7,13 @@ class CreateReportForm(forms.ModelForm):
     
     class Meta:
         model = Report
-        fields=['task_type','description']
+        fields=['task','remarks','status']
         
         widgets = { 
             # 'owner':TextInput(attrs={'disabled':True}),
-            'task_type': forms.Select(attrs={}),
-            'description': forms.Textarea(attrs={'rows':'4'}),
+            'task': forms.Textarea(attrs={'rows':'2'}),
+            'remarks': forms.Textarea(attrs={'rows':'4'}),
+            'status': forms.Select(attrs={}),
         }
         
         labels = {
@@ -25,11 +26,11 @@ class CreateReportForm(forms.ModelForm):
         
 class DetailReportForm(forms.ModelForm):
     class Meta:
-        fields=['task_type','description']
+        fields=['task','remarks']
         widgets = { 
             'owner':forms.TextInput(attrs={'disabled':True}),
-            'task_type': forms.Select(attrs={'disabled':True}),
-            'description': forms.Textarea(attrs={'rows':'4','disabled':True}),
+            'task': forms.Textarea(attrs={'rows':'2','disabled':True}),
+            'remarks': forms.Textarea(attrs={'rows':'4','disabled':True}),
         }
         
         
@@ -63,10 +64,10 @@ class ReportFilterForm(forms.Form):
 
         if search:
             reports = reports.filter(
-                Q(description__icontains=search) |
+                Q(remarks__icontains=search) |
                 Q(owner__user__first_name__icontains=search) |
-                Q(owner__user__last_name__icontains=search) |
-                Q(task_type__type__icontains=search)
+                Q(owner__user__last_name__icontains=search) 
+
             )
 
         reports = reports.filter(status='Approved').order_by('-created_at')
@@ -86,10 +87,10 @@ class SearchFilterForm(forms.Form):
 
         if search:
             reports = reports.filter(
-                Q(description__icontains=search) |
+                Q(remarks__icontains=search) |
                 Q(owner__user__first_name__icontains=search) |
-                Q(owner__user__last_name__icontains=search) |
-                Q(task_type__type__icontains=search)
+                Q(owner__user__last_name__icontains=search) 
+
             )
 
         reports = reports.order_by('-created_at')

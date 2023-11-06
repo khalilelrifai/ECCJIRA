@@ -39,15 +39,17 @@ class Employee(Model):
 
 class Report(Model):
     STATUS_CHOICES= (
-    ('Pending', 'Pending'),
-    ('Approved', 'Approved'),
+    ('On Hold', 'On Hold'),
+    ('In Progress', 'In Progress'),
+    ('Not Started', 'Not Started'),
+    ('Done', 'Done'),
     )
     id=AutoField(primary_key=True,editable=False)
     owner = ForeignKey(Employee,on_delete=SET_NULL,null=True)
-    task_type=ForeignKey(Task_type,on_delete=SET_NULL,null=True)
+    task=TextField(null=True)
     created_at=DateTimeField(auto_now_add=True)
-    status=CharField(max_length=50,choices=STATUS_CHOICES,default='Pending')
-    description=TextField(null=True)
+    status=CharField(max_length=50,choices=STATUS_CHOICES,default='On Hold')
+    remarks=TextField(null=True)
 
 
     def __str__(self):
