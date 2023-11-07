@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django.contrib.humanize' ,
     'formtools',
+    "crispy_bootstrap4",
+
 
 
 

@@ -4,9 +4,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group, Permission, User
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template import loader
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import *
 
@@ -14,29 +15,79 @@ from .forms import *
 from .models import *
 
 
+def get_filtered_employees(request):
+    department_id = request.GET.get('department')
+    role_id = request.GET.get('role')
+
+    if department_id and role_id:
+        try:
+            filtered_employees = Employee.objects.filter(department_id=department_id, role_id=role_id).values('id', 'user__first_name', 'user__last_name')
+            # Filter the employees based on the department and role
+
+            employees_list = list(filtered_employees)
+            print(employees_list)
+            return JsonResponse(employees_list, safe=False)
+        except Employee.DoesNotExist:
+            return JsonResponse([], safe=False)
+    else:
+        return JsonResponse([], safe=False)
+
+
 class CreateTask(LoginRequiredMixin,View):
     success_url = reverse_lazy('task:main')
     template_name = 'task/task_form.html'
 
+    def get(self, request):
+        # Assuming you have a form to create tasks, you can include filters for assigned_to
+        # Get all departments and roles for filtering options
+        departments = Department.objects.all()
+        roles = Role.objects.all()
 
-    def get(self,request):
-        form=CreateTaskForm()
-        x = get_object_or_404 (Job_title,employee__user=self.request.user)
-        context={'form':form}
-        context['job_title'] = x
-        context['department'] = x.department
-        return render(request,self.template_name,context)
+        context = {
+            'departments': departments,
+            'roles': roles,
+        }
+        return render(request, self.template_name, context)
 
     def post(self, request):
-        form = CreateTaskForm(request.POST)
-        if not form.is_valid():
-            context = {'form': form}
-            return render(request, self.template_name, context)
-        data = form.save(commit=False)
-        data.owner_id = Employee.objects.get(user = self.request.user).id
-        data.save()
+        # Process form data to create a new task
+        # This is just an example; you should validate and save the form data
+        owner_id = request.POST.get('owner')  # Assuming 'owner' is selected in the form
+        assigned_to_ids = request.POST.getlist('assigned_to')  # Assuming 'assigned_to' is a multiple selection in the form
 
-        return redirect(self.success_url)
+        # Create the task object and save it
+        task = Task(
+            owner_id=owner_id,
+            # Other task details...
+        )
+        task.save()
+        task.assigned_to.add(*assigned_to_ids)  # Assign selected employees to the task
+
+        # Redirect to a success page or return a response
+        # Replace 'success_url' with your actual success URL
+        return HttpResponseRedirect(reverse(self.success_url))
+
+# class CreateTask(LoginRequiredMixin,View):
+#     success_url = reverse_lazy('task:main')
+#     template_name = 'task/task_form.html'
+
+
+#     def get(self,request):
+#         form=CreateTaskForm()
+#         context={'form':form}
+
+#         return render(request,self.template_name,context)
+
+#     def post(self, request):
+#         form = CreateTaskForm(request.POST)
+#         if not form.is_valid():
+#             context = {'form': form}
+#             return render(request, self.template_name, context)
+#         data = form.save(commit=False)
+#         data.owner_id = Employee.objects.get(user = self.request.user).id
+#         data.save()
+
+#         return redirect(self.success_url)
 
 
     

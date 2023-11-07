@@ -8,93 +8,101 @@
 {% endblock stylesheets %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="mb-3 mb-lg-0">
-        <h1 class="h4">Add New Task</h1>
-    </div>
-</div>
-<div class="container-fluid">
-    <div class="card border-0 shadow components-section">
-        <div class="card-body">
-        <form method="post" >
-            {% csrf_token %}
-    <div class="row mb-5">
-        <div class="col-sm-4">
-            <label for="fullname">Name</label>
-            <input type="text" class="form-control"  disabled value="{{user.get_full_name}}" name="fullname">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Task</title>
+</head>
+<body>
+    <h1>Create Task</h1>
+
+    <form method="post" action="{% url 'task:create' %}">
+        {% csrf_token %}
+
+        <label for="title">Task Title:</label>
+        <input type="text" name="title" required>
+
+        <label for="department">Select Department:</label>
+        <select name="department" id="departmentSelect">
+            <option value="">-- Select Department --</option>
+            {% for department in departments %}
+                <option value="{{ department.id }}">{{ department.department }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="role">Select Role:</label>
+        <select name="role" id="roleSelect">
+            <option value="">-- Select Role --</option>
+            {% for role in roles %}
+                <option value="{{ role.id }}">{{ role.title }}</option>
+            {% endfor %}
+        </select>
+
+        <div id="assignedToSection" style="display: none;">
+            <p>Assign To:</p>
+            <div id="assignedToCheckbox">
+                <!-- Assigned to checkboxes will be added here -->
+            </div>
         </div>
-        <div class="col-sm-4">
-            <label for="job_title">Job Title</label>
-            <input type="text" class="form-control"  disabled value="{{job_title}}" name="job_title">
-        </div>
-        <div class="col-sm-4">
-            <label for="department">Department</label>
-            <input type="text" class="form-control"  disabled value="{{department}}" name="department">
-        </div>
-    </div>
-    <div class="row mb-5">
-        <div class="col-sm-4">
-            {{form.task|as_crispy_field}}
-        </div>
-        <div class="col-sm-2">
-            {{form.status|as_crispy_field}}
-        </div>
-    </div>
-    <div class="row mb-5">
-        <div class="col-sm-8">
-            {{form.remarks|as_crispy_field}}
-        </div>
-    </div>
-    <div class="row mb-10" >
-        <div class="col-md-12 text-center">
-            <a href="{% if 'list' in request.path %} {% url 'task:list' %} {% else %} {% url 'task:main' %} {% endif %} " class="btn btn-gray-300">Cancel</a>
-            <input type="submit" class="btn btn-success"  >
-        </div>
-    </div>
+
+        <button type="submit">Create Task</button>
     </form>
-    </div>
-    </div> 
-</div>
+
+    
+</body>
+</html>
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        
-        $("#successAlert").on("click", function() {
-            
-            if($("#form1")[0].checkValidity()) {
-                var title = $("#form1 [name='title']").val();
 
-            const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-primary',
-                cancelButton: 'btn btn-gray'
-            },
-            buttonsStyling: false
-        });
+<script>
+    document.getElementById('departmentSelect').addEventListener('change', updateAssignedTo);
+    document.getElementById('roleSelect').addEventListener('change', updateAssignedTo);
 
-            swalWithBootstrapButtons.fire({
-                icon: 'success',
-                title: 'Success alert',
-                text: 'Your work has been saved',
-                showConfirmButton: true,
-                timer: 1500
-            });
-            document.getElementById("form1").reset();
+    function updateAssignedTo() {
+        const department = document.getElementById('departmentSelect').value;
+        const role = document.getElementById('roleSelect').value;
 
+        if (department && role) {
+            fetch(`task/create/get_employees/?department=${department}&role=${role}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data); // Log the received data
 
-                // ajax here
-            } else {
-                $("#form1")[0].reportValidity();
-            }
+                    const assignedToCheckbox = document.getElementById('assignedToCheckbox');
+                    assignedToCheckbox.innerHTML = ''; // Clear existing checkboxes
 
-            
-        });
-    }) -->
+                    if (data && data.length > 0) {
+                        data.forEach(employee => {
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.name = 'assigned_to';
+                            checkbox.value = employee.id;
+                            const label = document.createElement('label');
+                            label.appendChild(checkbox);
+                            label.appendChild(document.createTextNode(employee.user__first_name + ' ' + employee.user__last_name));
+                            assignedToCheckbox.appendChild(label);
+                        });
+                        document.getElementById('assignedToSection').style.display = 'block';
+                    } else {
+                        console.log('No data received or empty data.'); // Log if no or empty data received
+                        document.getElementById('assignedToSection').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        } else {
+            document.getElementById('assignedToSection').style.display = 'none';
+        }
+    }
 </script>
 
 {% endblock javascripts %}

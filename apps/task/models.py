@@ -41,7 +41,6 @@ class Task(Model):
     )
     id=AutoField(primary_key=True,editable=False)
     owner = ForeignKey(Employee,on_delete=SET_NULL,null=True)
-    created_at=DateTimeField(auto_now_add=True)
     status=CharField(max_length=50,choices=STATUS_CHOICES,default='On Hold')
     title = CharField(max_length=200)
     created_date = DateField(auto_now_add=True)
