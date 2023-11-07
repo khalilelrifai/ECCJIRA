@@ -8,49 +8,60 @@
 {% endblock stylesheets %}
 
 {% block content %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Task</title>
-</head>
-<body>
-    <h1>Create Task</h1>
+<div class="container-fluid">
+    <div class="mb-3 mb-lg-0">
+        <h1 class="h4">Create Task</h1>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="card border-0 shadow components-section">
+        <div class="card-body">
+            <form method="post" action="{% url 'task:create' %}">
+            {% csrf_token %}
 
-    <form method="post" action="{% url 'task:create' %}">
-        {% csrf_token %}
-
-        <label for="title">Task Title:</label>
-        <input type="text" name="title" required>
-
-        <label for="department">Select Department:</label>
-        <select name="department" id="departmentSelect">
-            <option value="">-- Select Department --</option>
-            {% for department in departments %}
-                <option value="{{ department.id }}">{{ department.department }}</option>
-            {% endfor %}
-        </select>
-
-        <label for="role">Select Role:</label>
-        <select name="role" id="roleSelect">
-            <option value="">-- Select Role --</option>
-            {% for role in roles %}
-                <option value="{{ role.id }}">{{ role.title }}</option>
-            {% endfor %}
-        </select>
-
-        <div id="assignedToSection" style="display: none;">
-            <p>Assign To:</p>
-            <div id="assignedToCheckbox">
-                <!-- Assigned to checkboxes will be added here -->
-            </div>
+    <div class="row mb-5">
+        <div class="col-sm-4">
+            <label for="title">Task Title:</label>
+            <input type="text" class="form-control" name="title" required>
         </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-sm-3">
+            <label for="department">Select Department:</label>
+            <select name="department" class="form-select" id="departmentSelect">
+                <option value="">-- Select Department --</option>
+                {% for department in departments %}
+                    <option value="{{ department.id }}">{{ department.department }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label for="role">Select Role:</label>
+            <select name="role" class="form-select" id="roleSelect">
+                <option value="">-- Select Role --</option>
+                {% for role in roles %}
+                    <option value="{{ role.id }}">{{ role.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-3" id="assignedToSection" style="display: none;">
 
-        <button type="submit">Create Task</button>
+                <p>Assign To:</p>
+                <div id="assignedToCheckbox">
+                    <!-- Assigned to checkboxes will be added here -->
+                </div>
+        </div>
+    </div>
+    <div class="row mb-10" >
+        <div class="col-md-12 text-center">
+            <a href="{% if 'task' in request.path %} {% url 'task:list' %} {% else %} {% url 'task:main' %} {% endif %} " class="btn btn-gray-300">Cancel</a>
+            <input type="submit" class="btn btn-success"  >
+        </div>
+    </div>
     </form>
-
-    
-</body>
-</html>
+    </div>
+    </div> 
+</div>
 
 {% endblock content %}
 
@@ -85,9 +96,10 @@
                             checkbox.type = 'checkbox';
                             checkbox.name = 'assigned_to';
                             checkbox.value = employee.id;
+                            checkbox.classList.add('form-check-input');
                             const label = document.createElement('label');
                             label.appendChild(checkbox);
-                            label.appendChild(document.createTextNode(employee.user__first_name + ' ' + employee.user__last_name));
+                            label.appendChild(document.createTextNode(' '+ employee.user__first_name + ' ' + employee.user__last_name));
                             assignedToCheckbox.appendChild(label);
                         });
                         document.getElementById('assignedToSection').style.display = 'block';
