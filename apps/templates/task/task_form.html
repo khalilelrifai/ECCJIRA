@@ -41,6 +41,7 @@
                 {% endfor %}
             </select>
         </div>
+        {% if request.user|has_group:"Admin" %} 
         <div class="col-sm-2">
             <label for="role">Select Role:</label>
             <select name="role" class="form-select" id="roleSelect">
@@ -50,6 +51,7 @@
                 {% endfor %}
             </select>
         </div>
+        {% endif %}
         <div class="col-sm-3" id="assignedToSection" style="display: none;">
 
                 <p>Assign To:</p>

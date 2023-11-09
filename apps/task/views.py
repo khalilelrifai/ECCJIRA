@@ -134,6 +134,9 @@ class TaskUpdateView(LoginRequiredMixin,UpdateView):
     form_class = CreateTaskForm
     success_url = reverse_lazy('task:list')
     template_name = 'task/task_form.html'
+    extra_context={'departments': Department.objects.all(),'roles': Role.objects.all(),}     
+
+    
     
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)

@@ -95,7 +95,9 @@
                                     <div class="dropdown-menu py-0">
                                             <a class="dropdown-item rounded-top" href="{% url 'task:L-detail' task.id %}"><span ></span>View Details</a>
                                             <a class="dropdown-item" href="{% url 'task:edit' task.id %}"><span ></span>Edit</a>
+                                            {% if task.owner.user == user %}
                                             <a class="dropdown-item text-danger rounded-bottom" href="{% url 'task:delete' task.id %}"><span ></span>Remove</a>
+                                            {% endif %}
 
                                     </div>
                                 </div>
