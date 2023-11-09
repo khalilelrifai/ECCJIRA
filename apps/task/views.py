@@ -25,7 +25,6 @@ def get_filtered_employees(request):
             # Filter the employees based on the department and role
 
             employees_list = list(filtered_employees)
-            print(employees_list)
             return JsonResponse(employees_list, safe=False)
         except Employee.DoesNotExist:
             return JsonResponse([], safe=False)
@@ -38,56 +37,43 @@ class CreateTask(LoginRequiredMixin,View):
     template_name = 'task/task_form.html'
 
     def get(self, request):
-        # Assuming you have a form to create tasks, you can include filters for assigned_to
-        # Get all departments and roles for filtering options
+        form = CreateTaskForm
         departments = Department.objects.all()
         roles = Role.objects.all()
 
         context = {
+            'form':form,
             'departments': departments,
             'roles': roles,
         }
         return render(request, self.template_name, context)
 
     def post(self, request):
-        # Process form data to create a new task
-        # This is just an example; you should validate and save the form data
-        owner_id = request.POST.get('owner')  # Assuming 'owner' is selected in the form
-        assigned_to_ids = request.POST.getlist('assigned_to')  # Assuming 'assigned_to' is a multiple selection in the form
+        form = CreateTaskForm(request.POST)
+        
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.owner_id = Employee.objects.get(user=self.request.user).id
+        
+            # Retrieve other POST data
+            department = request.POST.get('department')
+            role = request.POST.get('role')
+            assigned_to = request.POST.getlist('assigned_to')
+            
+            # Update 'data' with additional form fields and POST data
+            data.department_id = department
+            data.role_id = role
+            data.category_id =role
 
-        # Create the task object and save it
-        task = Task(
-            owner_id=owner_id,
-            # Other task details...
-        )
-        task.save()
-        task.assigned_to.add(*assigned_to_ids)  # Assign selected employees to the task
+            data.save()
+            data.assigned_to.add(*assigned_to)
+            # Assign selected employees to the task
+            return redirect(self.success_url)
 
-        # Redirect to a success page or return a response
-        # Replace 'success_url' with your actual success URL
-        return HttpResponseRedirect(reverse(self.success_url))
-
-# class CreateTask(LoginRequiredMixin,View):
-#     success_url = reverse_lazy('task:main')
-#     template_name = 'task/task_form.html'
+        context = {'form': form}
+        return render(request, self.template_name, context)
 
 
-#     def get(self,request):
-#         form=CreateTaskForm()
-#         context={'form':form}
-
-#         return render(request,self.template_name,context)
-
-#     def post(self, request):
-#         form = CreateTaskForm(request.POST)
-#         if not form.is_valid():
-#             context = {'form': form}
-#             return render(request, self.template_name, context)
-#         data = form.save(commit=False)
-#         data.owner_id = Employee.objects.get(user = self.request.user).id
-#         data.save()
-
-#         return redirect(self.success_url)
 
 
     
@@ -95,6 +81,7 @@ class CreateTask(LoginRequiredMixin,View):
 class TaskListView(LoginRequiredMixin, View):
     template_name = 'task/task_list.html'
     paginate_by = 10
+
 
     def get(self, request):
         department = Department.objects.all().values_list('department', flat=True)
@@ -106,9 +93,9 @@ class TaskListView(LoginRequiredMixin, View):
                 query.add(Q(owner__user__first_name__icontains=strval), Q.OR)
                 query.add(Q(owner__user__last_name__icontains=strval), Q.OR)
                 query.add(Q(owner__user=self.request.user), Q.AND)
-                task_list = Task.objects.filter(query).select_related().order_by('-created_at')
+                task_list = Task.objects.filter(query).select_related().order_by('-created_date')
             else:
-                task_list = Task.objects.filter(owner__user=self.request.user).order_by('-created_at')
+                task_list = Task.objects.filter(owner__user=self.request.user).order_by('-created_date')
                 
             paginator = Paginator(task_list, self.paginate_by)
             page_number = request.GET.get('page')
@@ -123,30 +110,34 @@ class TaskListView(LoginRequiredMixin, View):
             return render(request, self.template_name, context)
 
 
+class TaskDeleteView(LoginRequiredMixin,DeleteView):
+    model = Task
+    success_url = reverse_lazy('task:list')
 
-# class ReportDetailView(LoginRequiredMixin,DetailView):
-#     model = Report
-#     template_name= "reports/report_detail.html"
+
+class TaskDetailView(LoginRequiredMixin,DetailView):
+    model = Task
+    template_name= "task/task_detail.html"
     
-#     def get_context_data(self, **kwargs) :
-#         context = super().get_context_data(**kwargs)
-#         context['group'] = User.objects.filter(groups__name__contains='admin')
-#         return context
+    # def get_context_data(self, **kwargs) :
+    #     context = super().get_context_data(**kwargs)
+    #     context['group'] = User.objects.filter(groups__name__contains='admin')
+    #     return context
      
 
-# class ReportUpdateView(LoginRequiredMixin,UpdateView):
-#     model = Report
-#     form_class = CreateReportForm
-#     success_url = reverse_lazy('reports:list')
-#     template_name = 'reports/report_form.html'
+class TaskUpdateView(LoginRequiredMixin,UpdateView):
+    model = Task
+    form_class = CreateTaskForm
+    success_url = reverse_lazy('task:list')
+    template_name = 'task/task_form.html'
     
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         x = get_object_or_404 (Job_title,employee__user=self.request.user)
-#         context['job_title'] = x
-#         context['department'] = x.department
-#         context['form'].fields['task_type'].queryset = Task_type.objects.filter(job_title_id=x.id)
-#         return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     x = get_object_or_404 (Job_title,employee__user=self.request.user)
+    #     context['job_title'] = x
+    #     context['department'] = x.department
+    #     context['form'].fields['task_type'].queryset = Task_type.objects.filter(job_title_id=x.id)
+    #     return context
 
 
 # class ReportDeleteView(LoginRequiredMixin,DeleteView):

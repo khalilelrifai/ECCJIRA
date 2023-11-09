@@ -9,6 +9,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
+
 <div class="container-fluid">
     <div class="mb-3 mb-lg-0">
         <h1 class="h4">Task Details</h1>
@@ -20,35 +21,41 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="row mb-5">
-                    <div class="col-sm-4">
+                    <div class="col-sm-2">
 
-                        <label for="fullname">Name</label>
+                        <label for="fullname">Created By</label>
                         <input type="text" class="form-control" disabled value="{{task.owner}}" name="fullname">
 
                     </div>
-                    <div class="col-sm-4">
-                        <label for="job_title">Job Title</label>
-                        <input type="text" class="form-control" disabled value="{{task.owner.job_title}}"
-                            name="job_title">
+                    <div class="col-sm-2">
+                        <label for="job_title">Created Date</label>
+                        <input type="text" class="form-control" disabled value="{{task.created_date}}"
+                            name="created_date">
                     </div>
-                    <div class="col-sm-4">
-                        <label for="department">Department</label>
-                        <input type="text" class="form-control" disabled value="{{task.owner.job_title.department}}"
-                            name="department">
-                    </div>
-                </div>
-                <div class="row mb-5">
-                    <div class="col-sm-4">
-                        <label for="department">Task Type</label>
-                        <input type="text" class="form-control" disabled value="{{task.task_type}}" name="task_type">
+                    <div class="col-sm-2">
+                        <label for="department">Category</label>
+                        <input type="text" class="form-control" disabled value="{{task.category}}"
+                            name="category">
                     </div>
                 </div>
                 <div class="row mb-5">
-                    <div class="col-sm-8">
-                        <label for="department">Task Type</label>
-                        <textarea rows="4" class="form-control" disabled
-                            name="description">{{task.description}}</textarea>
+                    <div class="col-sm-4">
+                        <label for="department">Task Title</label>
+                        <input type="text" class="form-control" disabled value="{{task.title}}" name="title">
                     </div>
+                    <div class="col-sm-2">
+                        <label for="department">Assigned To</label>
+                        <div class="form-check">
+                            {% for employee in task.assigned_to.all %}
+                                <input type="checkbox" class="form-check-input"  name="assigned_to"  checked disabled>
+                                <label class="form-check-label" for="employee_{{ employee.id }}">{{ employee.fullname }}</label>
+                                <br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-5">
+
                 </div>
                 <div class="row mb-10">
                     <div class="col-md-12 text-center">
@@ -58,19 +65,13 @@
                         <a href="{% url 'task:edit' task.id %}" class="btn btn-success" id="successAlert">Edit </a>
                         <a href="{% url 'task:delete' task.id %}" class="btn btn-danger"
                             id="successAlert">Delete</a>
-                        {% elif task.status == "Pending" and task.owner.user != user and user in group  %}
-                        <a href="{% url 'task:director' %}" class="btn btn-gray-300">Cancel</a>
-                        <a href="{% url 'task:approve' task.id %}" class="btn btn-success"
-                            id="successAlert">Approve</a>
-                        {% endif %}
+                            {% endif %}
                     </div>
                 </div>
-
             </form>
         </div>
     </div>
 </div>
-
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
@@ -110,6 +111,6 @@
             
         });
     }) -->
-</script>
+
 
 {% endblock javascripts %}

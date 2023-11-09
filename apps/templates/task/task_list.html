@@ -46,10 +46,15 @@
               <tr>
                   <!-- <th class="border-gray-200">Report ID</th> -->
                   <!-- <th class="border-gray-200">Employee Name</th>						 -->
-                  <th class="border-gray-200">Task Type</th>
-                  <th class="border-gray-200">Issued Date</th>
+                  <th class="border-gray-200">Title</th>
+                  <th class="border-gray-200">Assigned To<i class="fa-sort-up" aria-hidden="true"></i></th>
+                  <th class="border-gray-200">Category</th>
+                  <th class="border-gray-200">Created Date</th>
+                  <th class="border-gray-200">Concern To</th>
+                  <th class="border-gray-200">Target Date</th>
                   <th class="border-gray-200">Status</th>
-                  <th class="border-gray-200">Action</th>
+                  <th class="border-gray-200">Details</th>
+
 
               </tr>
           </thead>
@@ -61,16 +66,22 @@
                         <tr>
                             <!-- <td><span class="fw-bold">{{i.report_id}}</span></td> -->
                             <!-- <td><span class="fw-normal">{{report.owner.fullname}}</span></td> -->
-                            <td><span class="fw-normal">{{task.task_type}}</span></td>                        
-                            <td><span class="fw-normal">{{task.created_at|naturalday}}</span></td>
+                            <td><span class="fw-normal">{{task.title|truncatewords:3}}</span></td>
+                            <td><span class="fw-normal">{% for employee in task.assigned_to.all %}
+                                <li>{{ employee.fullname }} </li>
+                            {% endfor %}</span></td>
+                            <td><span class="fw-normal">{{task.category}}</span></td>                       
+                            <td><span class="fw-normal">{{task.created_date|naturalday}}</span></td>
+                            <td><span class="fw-normal">{{task.concern_company}}</span></td>
+                            <td><span class="fw-normal">{{task.target_date|naturalday}}</span></td>
                             <td>
                                 <span class="form-check form-switch">
-                                    {% if task.status == 'Approved' %}
+                                    {% if task.status == 'Done' %}
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked"  checked style="background-color: green;"  disabled>
-                                    <label class="form-check-label" for="flexSwitchCheckChecked">Approved</label>
+                                    <label class="form-check-label" for="flexSwitchCheckChecked">Done</label>
                                     {% else %}
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" disabled>
-                                    <label class="form-check-label" for="flexSwitchCheckChecked">Pending</label>
+                                    <label class="form-check-label" for="flexSwitchCheckChecked">{{task.status}}</label>
                                     {% endif %}
                                 </span>
                             </td>
@@ -81,14 +92,14 @@
                                         <span class="">Action</span>
                                     </button>
                                     <div class="dropdown-menu py-0">
-                                        <a class="dropdown-item rounded-top" href="{% url 'task:L-detail' task.id %}"><span class="fas fa-eye me-2"></span>View Details</a>
-                                            {% if task.status == 'Pending' %}
+                                            <a class="dropdown-item rounded-top" href="{% url 'task:L-detail' task.id %}"><span class="fas fa-eye me-2"></span>View Details</a>
                                             <a class="dropdown-item" href="{% url 'task:edit' task.id %}"><span class="fas fa-edit me-2"></span>Edit</a>
                                             <a class="dropdown-item text-danger rounded-bottom" href="{% url 'task:delete' task.id %}"><span class="fas fa-trash-alt me-2"></span>Remove</a>
-                                            {% endif %}
+
                                     </div>
                                 </div>
                             </td>
+
                         </tr>
 
                 {% endfor %}
@@ -133,6 +144,34 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    
+    $(document).ready(function () {
+        $('th').on('click', function () {
+            var table = $(this).parents('table').eq(0);
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+            this.asc = !this.asc;
+            if (!this.asc) {
+                rows = rows.reverse();
+            }
+            for (var i = 0; i < rows.length; i++) {
+                table.append(rows[i]);
+            }
+        });
 
+        function comparer(index) {
+            return function (a, b) {
+                var valA = getCellValue(a, index);
+                var valB = getCellValue(b, index);
+                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB);
+            };
+        }
+
+        function getCellValue(row, index) {
+            return $(row).children('td').eq(index).text();
+        }
+    });
+</script>
 
 {% endblock javascripts %}

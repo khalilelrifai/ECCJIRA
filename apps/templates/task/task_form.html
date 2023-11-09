@@ -21,12 +21,17 @@
 
     <div class="row mb-5">
         <div class="col-sm-4">
-            <label for="title">Task Title:</label>
-            <input type="text" class="form-control" name="title" required>
+            {{form.title|as_crispy_field}}
+        </div>
+        <div class="col-sm-2">
+            {{form.concern_company|as_crispy_field}}
+        </div>
+        <div class="col-sm-2">
+            {{form.target_date|as_crispy_field}}
         </div>
     </div>
     <div class="row mb-5">
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <label for="department">Select Department:</label>
             <select name="department" class="form-select" id="departmentSelect">
                 <option value="">-- Select Department --</option>
@@ -35,7 +40,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <label for="role">Select Role:</label>
             <select name="role" class="form-select" id="roleSelect">
                 <option value="">-- Select Role --</option>
@@ -50,6 +55,17 @@
                 <div id="assignedToCheckbox">
                     <!-- Assigned to checkboxes will be added here -->
                 </div>
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-sm-4">
+            {{form.remarks|as_crispy_field}}
+        </div>
+        <div class="col-sm-4">
+            {{form.reviews|as_crispy_field}}
+        </div>
+        <div class="col-sm-2">
+            {{form.status|as_crispy_field}}
         </div>
     </div>
     <div class="row mb-10" >
@@ -91,19 +107,25 @@
                     assignedToCheckbox.innerHTML = ''; // Clear existing checkboxes
 
                     if (data && data.length > 0) {
-                        data.forEach(employee => {
-                            const checkbox = document.createElement('input');
-                            checkbox.type = 'checkbox';
-                            checkbox.name = 'assigned_to';
-                            checkbox.value = employee.id;
-                            checkbox.classList.add('form-check-input');
-                            const label = document.createElement('label');
-                            label.appendChild(checkbox);
-                            label.appendChild(document.createTextNode(' '+ employee.user__first_name + ' ' + employee.user__last_name));
-                            assignedToCheckbox.appendChild(label);
-                        });
-                        document.getElementById('assignedToSection').style.display = 'block';
-                    } else {
+                            data.forEach(employee => {
+                                const checkboxDiv = document.createElement('div'); // Create a div for each checkbox
+
+                                const checkbox = document.createElement('input');
+                                checkbox.type = 'checkbox';
+                                checkbox.name = 'assigned_to';
+                                checkbox.value = employee.id;
+                                checkbox.classList.add('form-check-input'); // Add class to the checkbox
+                                
+                                const label = document.createElement('label');
+                                label.appendChild(checkbox);
+                                label.appendChild(document.createTextNode(' '+ employee.user__first_name + ' ' + employee.user__last_name));
+                                
+                                checkboxDiv.appendChild(label); // Append label to the div
+                                assignedToCheckbox.appendChild(checkboxDiv); // Append div to the main container
+                            });
+                            document.getElementById('assignedToSection').style.display = 'block';
+                        }
+ else {
                         console.log('No data received or empty data.'); // Log if no or empty data received
                         document.getElementById('assignedToSection').style.display = 'none';
                     }

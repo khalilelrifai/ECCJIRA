@@ -6,43 +6,17 @@ from .models import *
 from django import forms
 
 class CreateTaskForm(forms.ModelForm):
-    department = forms.ModelChoiceField(
-        queryset=Department.objects.all(),
-        empty_label="Select Department",
-        required=False,
-        widget=forms.Select(attrs={'id': 'id_department'})
-    )
-    role = forms.ModelChoiceField(
-        queryset=Role.objects.all(),
-        empty_label="Select Role",
-        required=False,
-        widget=forms.Select(attrs={'id': 'id_role'})
-    )
-    assigned_to = forms.ModelMultipleChoiceField(
-        queryset=Employee.objects.none(),
-        widget=forms.CheckboxSelectMultiple(attrs={'id': 'id_assigned_to'}),
-        required=False
-    )
-
-    def filter_employees(self):
-        department_id = self.cleaned_data.get('department')
-        role_id = self.cleaned_data.get('role')
-
-        if department_id and role_id:
-            employees = Employee.objects.filter(department_id=department_id, role_id=role_id)
-            self.fields['assigned_to'].queryset = employees
-            self.fields['assigned_to'].widget.attrs['id'] = 'id_filtered-assigned-to'
-        else:
-            self.fields['assigned_to'].queryset = Employee.objects.none()
-
+ 
     class Meta:
         model = Task
-        fields = ['title', 'remarks', 'status', 'target_date', 'reviews', 'assigned_to', 'concern_company']
+        fields = ['title', 'remarks', 'status', 'target_date', 'reviews', 'concern_company']
         widgets = { 
             'title': forms.Textarea(attrs={'rows': '1'}),
+            'concern_company': forms.TextInput(attrs={'rows': '1'}),
             'remarks': forms.Textarea(attrs={'rows': '4'}),
             'reviews': forms.Textarea(attrs={'rows': '4'}),
             'status': forms.Select(attrs={}),
+            'target_date':forms.DateInput(attrs={'class': 'form-control', 'type':'date'})
         }
         
 class DetailTaskForm(forms.ModelForm):
