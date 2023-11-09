@@ -63,6 +63,7 @@ class CreateTask(LoginRequiredMixin,View):
             # Update 'data' with additional form fields and POST data
             data.department_id = department
             data.role_id = role
+            
             data.category_id =role
 
             data.save()
@@ -84,7 +85,7 @@ class TaskListView(LoginRequiredMixin, View):
 
 
     def get(self, request):
-        department = Department.objects.all().values_list('department', flat=True)
+        employee = Employee.objects.get(user=self.request.user)
         strval = request.GET.get("search", False)
         
         if request.user.is_authenticated:
@@ -95,7 +96,10 @@ class TaskListView(LoginRequiredMixin, View):
                 query.add(Q(owner__user=self.request.user), Q.AND)
                 task_list = Task.objects.filter(query).select_related().order_by('-created_date')
             else:
-                task_list = Task.objects.filter(owner__user=self.request.user).order_by('-created_date')
+                    task_list = Task.objects.filter(
+                        Q(owner__user=self.request.user) | Q(assigned_to=employee)
+                    ).order_by('-created_date').distinct()
+                
                 
             paginator = Paginator(task_list, self.paginate_by)
             page_number = request.GET.get('page')

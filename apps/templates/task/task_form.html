@@ -8,6 +8,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
+{% load auth_extras %}   
 <div class="container-fluid">
     <div class="mb-3 mb-lg-0">
         <h1 class="h4">Create Task</h1>
@@ -56,17 +57,22 @@
                     <!-- Assigned to checkboxes will be added here -->
                 </div>
         </div>
-    </div>
-    <div class="row mb-5">
-        <div class="col-sm-4">
-            {{form.remarks|as_crispy_field}}
-        </div>
-        <div class="col-sm-4">
-            {{form.reviews|as_crispy_field}}
-        </div>
         <div class="col-sm-2">
             {{form.status|as_crispy_field}}
         </div>
+    </div>
+    <div class="row mb-5">
+
+        {% if request.user|has_group:"Admin" %} 
+        <div class="col-sm-4">
+            {{form.reviews|as_crispy_field}}
+        </div>
+        {% else %}
+        <div class="col-sm-4">
+            {{form.remarks|as_crispy_field}}
+        </div>
+        {% endif %}
+
     </div>
     <div class="row mb-10" >
         <div class="col-md-12 text-center">

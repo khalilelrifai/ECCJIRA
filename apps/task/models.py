@@ -47,7 +47,7 @@ class Task(Model):
     target_date = DateField()
     remarks = TextField(blank=True)
     reviews = TextField(blank=True)
-    category = OneToOneField(Role,on_delete=SET_NULL,null=True)
+    category = ForeignKey(Role, on_delete=SET_NULL,null=True)
     assigned_to = ManyToManyField(Employee, related_name='tasks')
     concern_company = CharField(max_length=200)
 

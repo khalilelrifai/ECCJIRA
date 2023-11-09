@@ -3,7 +3,8 @@
 {% block title %} Submitted Tasks {% endblock %} 
 
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">{% endblock stylesheets %}
 
 {% block content %}
 {% load humanize %}
@@ -46,14 +47,14 @@
               <tr>
                   <!-- <th class="border-gray-200">Report ID</th> -->
                   <!-- <th class="border-gray-200">Employee Name</th>						 -->
-                  <th class="border-gray-200">Title</th>
-                  <th class="border-gray-200">Assigned To<i class="fa-sort-up" aria-hidden="true"></i></th>
-                  <th class="border-gray-200">Category</th>
-                  <th class="border-gray-200">Created Date</th>
-                  <th class="border-gray-200">Concern To</th>
-                  <th class="border-gray-200">Target Date</th>
-                  <th class="border-gray-200">Status</th>
-                  <th class="border-gray-200">Details</th>
+                  <th class="border-gray-200">Title <i class="fa fa-sort"></i></th>
+                  <th class="border-gray-200 ">Assigned To <i class="fa fa-sort"></i></th>
+                  <th class="border-gray-200">Category <i class="fa fa-sort"></i></th>
+                  <th class="border-gray-200">Created Date <i class="fa fa-sort"></i></th>
+                  <th class="border-gray-200">Concern To <i class="fa fa-sort"></i></th>
+                  <th class="border-gray-200">Target Date <i class="fa fa-sort"></i></th>
+                  <th class="border-gray-200">Status <i class="fa fa-sort"></i></th>
+                  <th class="border-gray-200">Details <i class="fa fa-sort"></i></th>
 
 
               </tr>
@@ -92,9 +93,9 @@
                                         <span class="">Action</span>
                                     </button>
                                     <div class="dropdown-menu py-0">
-                                            <a class="dropdown-item rounded-top" href="{% url 'task:L-detail' task.id %}"><span class="fas fa-eye me-2"></span>View Details</a>
-                                            <a class="dropdown-item" href="{% url 'task:edit' task.id %}"><span class="fas fa-edit me-2"></span>Edit</a>
-                                            <a class="dropdown-item text-danger rounded-bottom" href="{% url 'task:delete' task.id %}"><span class="fas fa-trash-alt me-2"></span>Remove</a>
+                                            <a class="dropdown-item rounded-top" href="{% url 'task:L-detail' task.id %}"><span ></span>View Details</a>
+                                            <a class="dropdown-item" href="{% url 'task:edit' task.id %}"><span ></span>Edit</a>
+                                            <a class="dropdown-item text-danger rounded-bottom" href="{% url 'task:delete' task.id %}"><span ></span>Remove</a>
 
                                     </div>
                                 </div>
@@ -152,8 +153,12 @@
             var table = $(this).parents('table').eq(0);
             var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
             this.asc = !this.asc;
-            if (!this.asc) {
-                rows = rows.reverse();
+            table.find('th i').removeClass('fa-sort-up fa-sort-down'); // Reset all icons
+            if (this.asc) {
+                rows.reverse();
+                $(this).find('i').removeClass('fa-sort-up').addClass('fa-sort-down');
+            } else {
+                $(this).find('i').removeClass('fa-sort-down').addClass('fa-sort-up');
             }
             for (var i = 0; i < rows.length; i++) {
                 table.append(rows[i]);
@@ -161,15 +166,39 @@
         });
 
         function comparer(index) {
-            return function (a, b) {
+            return function(a, b) {
                 var valA = getCellValue(a, index);
                 var valB = getCellValue(b, index);
-                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB);
+
+                // Convert to numeric values for comparison
+                if (!isNaN(valA) && !isNaN(valB)) {
+                    return valA - valB;
+                } else if (valA instanceof Date && valB instanceof Date) {
+                    return valA - valB;
+                } else {
+                    return valA.localeCompare(valB);
+                }
             };
         }
 
         function getCellValue(row, index) {
-            return $(row).children('td').eq(index).text();
+            var cell = $(row).children('td').eq(index);
+            var val = cell.text().trim();
+
+            // Parse date if applicable
+            var date = Date.parse(val);
+            if (!isNaN(date)) {
+                return new Date(date);
+            }
+
+            // Parse numbers if applicable
+            var number = parseFloat(val);
+            if (!isNaN(number)) {
+                return number;
+            }
+
+            // Return text for non-date, non-number values
+            return val;
         }
     });
 </script>
