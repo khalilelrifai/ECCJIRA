@@ -9,6 +9,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
+{% load auth_extras %}   
 
 <div class="container-fluid">
     <div class="mb-3 mb-lg-0">
@@ -39,11 +40,19 @@
                     </div>
                 </div>
                 <div class="row mb-5">
+                    <div class="col-sm-2">
+                        <label for="department">Status</label>
+                        <input type="text" class="form-control" disabled value="{{task.status}}"
+                            name="category">
+                    </div>
+                </div>
+                <div class="row mb-5">
                     <div class="col-sm-4">
                         <label for="department">Task Title</label>
                         <input type="text" class="form-control" disabled value="{{task.title}}" name="title">
                     </div>
                     <div class="col-sm-2">
+                        {% if request.user|has_group:"Admin" %} 
                         <label for="department">Assigned To</label>
                         <div class="form-check">
                             {% for employee in task.assigned_to.all %}
@@ -52,7 +61,9 @@
                                 <br>
                             {% endfor %}
                         </div>
+                        {% endif %}
                     </div>
+
                 </div>
                 <div class="row mb-5">
 

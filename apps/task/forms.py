@@ -1,23 +1,28 @@
 from django import forms
 
 from .models import *
+from django.contrib.auth.models import Group, Permission, User
 
 
 from django import forms
 
 class CreateTaskForm(forms.ModelForm):
- 
+
+
     class Meta:
         model = Task
         fields = ['title', 'remarks', 'status', 'target_date', 'reviews', 'concern_company']
-        widgets = { 
+        widgets = {
             'title': forms.Textarea(attrs={'rows': '1'}),
             'concern_company': forms.TextInput(attrs={'rows': '1'}),
             'remarks': forms.Textarea(attrs={'rows': '4'}),
             'reviews': forms.Textarea(attrs={'rows': '4'}),
             'status': forms.Select(attrs={}),
-            'target_date':forms.DateInput(attrs={'class': 'form-control', 'type':'date'})
+            'target_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
         }
+        
+        
+
         
 class DetailTaskForm(forms.ModelForm):
     class Meta:

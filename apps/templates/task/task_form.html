@@ -9,6 +9,7 @@
 
 {% block content %}
 {% load auth_extras %}   
+
 <div class="container-fluid">
     <div class="mb-3 mb-lg-0">
         <h1 class="h4">Create Task</h1>
@@ -17,7 +18,7 @@
 <div class="container-fluid">
     <div class="card border-0 shadow components-section">
         <div class="card-body">
-            <form method="post" action="{% url 'task:create' %}">
+            <form method="post">
             {% csrf_token %}
 
     <div class="row mb-5">
@@ -32,6 +33,7 @@
         </div>
     </div>
     <div class="row mb-5">
+        {% if request.user|has_group:"Admin" %} 
         <div class="col-sm-2">
             <label for="department">Select Department:</label>
             <select name="department" class="form-select" id="departmentSelect">
@@ -41,7 +43,7 @@
                 {% endfor %}
             </select>
         </div>
-        {% if request.user|has_group:"Admin" %} 
+
         <div class="col-sm-2">
             <label for="role">Select Role:</label>
             <select name="role" class="form-select" id="roleSelect">
@@ -65,15 +67,14 @@
     </div>
     <div class="row mb-5">
 
-        {% if request.user|has_group:"Admin" %} 
         <div class="col-sm-4">
             {{form.reviews|as_crispy_field}}
         </div>
-        {% else %}
+
         <div class="col-sm-4">
             {{form.remarks|as_crispy_field}}
         </div>
-        {% endif %}
+        
 
     </div>
     <div class="row mb-10" >

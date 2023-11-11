@@ -8,6 +8,7 @@
 
 {% block content %}
 {% load humanize %}
+{% load auth_extras %}   
   
   <div class="table-settings mb-4">
       <div class="row align-items-center justify-content-between">
@@ -48,8 +49,10 @@
                   <!-- <th class="border-gray-200">Report ID</th> -->
                   <!-- <th class="border-gray-200">Employee Name</th>						 -->
                   <th class="border-gray-200">Title <i class="fa fa-sort"></i></th>
+                  {% if request.user|has_group:"Admin" %} 
                   <th class="border-gray-200 ">Assigned To <i class="fa fa-sort"></i></th>
                   <th class="border-gray-200">Category <i class="fa fa-sort"></i></th>
+                  {% endif %}
                   <th class="border-gray-200">Created Date <i class="fa fa-sort"></i></th>
                   <th class="border-gray-200">Concern To <i class="fa fa-sort"></i></th>
                   <th class="border-gray-200">Target Date <i class="fa fa-sort"></i></th>
@@ -68,11 +71,13 @@
                             <!-- <td><span class="fw-bold">{{i.report_id}}</span></td> -->
                             <!-- <td><span class="fw-normal">{{report.owner.fullname}}</span></td> -->
                             <td><span class="fw-normal">{{task.title|truncatewords:3}}</span></td>
+                            {% if request.user|has_group:"Admin" %} 
                             <td><span class="fw-normal">{% for employee in task.assigned_to.all %}
                                 <li>{{ employee.fullname }} </li>
                             {% endfor %}</span></td>
-                            <td><span class="fw-normal">{{task.category}}</span></td>                       
-                            <td><span class="fw-normal">{{task.created_date|naturalday}}</span></td>
+                            <td><span class="fw-normal">{{task.category}}</span></td>     
+                            {% endif %}                  
+                            <td><span class="fw-normal">{{task.created_date}}</span></td>
                             <td><span class="fw-normal">{{task.concern_company}}</span></td>
                             <td><span class="fw-normal">{{task.target_date|naturalday}}</span></td>
                             <td>

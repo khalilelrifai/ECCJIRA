@@ -37,7 +37,11 @@ class CreateTask(LoginRequiredMixin,View):
     template_name = 'task/task_form.html'
 
     def get(self, request):
-        form = CreateTaskForm
+        form = CreateTaskForm()
+        if Group.objects.filter(name='Admin').exists() and request.user.groups.filter(name='Admin').exists():
+            form.fields['remarks'].disabled = 'disabled'
+        else:
+            form.fields['reviews'].disabled = 'disabled'
         departments = Department.objects.all()
         roles = Role.objects.all()
 
@@ -48,31 +52,40 @@ class CreateTask(LoginRequiredMixin,View):
         }
         return render(request, self.template_name, context)
 
+
+
     def post(self, request):
         form = CreateTaskForm(request.POST)
+        current_employee = get_object_or_404(Employee, user=request.user)
+        if not form.is_valid():
+            context = {'form': form}
+            return render(request, self.template_name, context)
         
-        if form.is_valid():
-            data = form.save(commit=False)
-            data.owner_id = Employee.objects.get(user=self.request.user).id
+        data = form.save(commit=False)
+        data.owner_id = Employee.objects.get(user=self.request.user).id
+    
+        # Retrieve other POST data
+        department = request.POST.get('department')
+        role = request.POST.get('role')
+        assigned_to = request.POST.getlist('assigned_to')
         
-            # Retrieve other POST data
-            department = request.POST.get('department')
-            role = request.POST.get('role')
-            assigned_to = request.POST.getlist('assigned_to')
-            
-            # Update 'data' with additional form fields and POST data
+        # Update 'data' with additional form fields and POST data
+        if Group.objects.filter(name='Admin').exists() and request.user.groups.filter(name='Admin').exists():
             data.department_id = department
             data.role_id = role
-            
             data.category_id =role
+            
+        else:
+            data.category_id = current_employee.role_id
+            assigned_to = [current_employee]
 
-            data.save()
-            data.assigned_to.add(*assigned_to)
-            # Assign selected employees to the task
-            return redirect(self.success_url)
 
-        context = {'form': form}
-        return render(request, self.template_name, context)
+            
+        data.department = current_employee.department
+        data.save()
+        data.assigned_to.add(*assigned_to)
+        # Assign selected employees to the task
+        return redirect(self.success_url)
 
 
 
@@ -81,7 +94,7 @@ class CreateTask(LoginRequiredMixin,View):
 
 class TaskListView(LoginRequiredMixin, View):
     template_name = 'task/task_list.html'
-    paginate_by = 10
+    paginate_by = 5
 
 
     def get(self, request):
@@ -96,6 +109,12 @@ class TaskListView(LoginRequiredMixin, View):
                 query.add(Q(owner__user=self.request.user), Q.AND)
                 task_list = Task.objects.filter(query).select_related().order_by('-created_date')
             else:
+                # Check if the user is in the admin group
+                if Group.objects.filter(name='Admin').exists() and request.user.groups.filter(name='Admin').exists():
+                    # If admin, display all tasks in the department
+                    task_list = Task.objects.filter(owner__department=employee.department).order_by('-created_date')
+                else:
+                    # If not admin, display tasks based on ownership or assignment
                     task_list = Task.objects.filter(
                         Q(owner__user=self.request.user) | Q(assigned_to=employee)
                     ).order_by('-created_date').distinct()
@@ -134,8 +153,18 @@ class TaskUpdateView(LoginRequiredMixin,UpdateView):
     form_class = CreateTaskForm
     success_url = reverse_lazy('task:list')
     template_name = 'task/task_form.html'
-    extra_context={'departments': Department.objects.all(),'roles': Role.objects.all(),}     
+    extra_context={'departments': Department.objects.all(),'roles': Role.objects.all(),}
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        
+        # Edit the attributes of the widgets
+        if Group.objects.filter(name='Admin').exists() and self.request.user.groups.filter(name='Admin').exists():
+            form.fields['remarks'].disabled = 'disabled'
+        else:
+            form.fields['reviews'].disabled = 'disabled'
+
+        return form
     
     
     # def get_context_data(self, **kwargs):
