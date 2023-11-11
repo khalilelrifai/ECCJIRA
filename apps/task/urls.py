@@ -15,7 +15,7 @@ urlpatterns = [
     path('', login_required(TemplateView.as_view(template_name='task/main.html')), name='main'),
     path('create',views.CreateTask.as_view(),name='create'),
     path('list',views.TaskListView.as_view(),name='list'),
-    path('task/create/get_employees/', views.get_filtered_employees, name='get_employees'),
+    path('get_employees/', views.get_filtered_employees, name='get_employees'),
     path('list/detail/<int:pk>',views.TaskDetailView.as_view(),name='L-detail'),
     # path('director/detail/<int:pk>',views.ReportDetailView.as_view(),name='D-detail'),
     path('list/edit/<int:pk>',views.TaskUpdateView.as_view(),name='edit'),

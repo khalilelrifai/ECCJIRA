@@ -42,12 +42,13 @@ class CreateTask(LoginRequiredMixin,View):
             form.fields['remarks'].disabled = 'disabled'
         else:
             form.fields['reviews'].disabled = 'disabled'
-        departments = Department.objects.all()
+        department = get_object_or_404 (Department,employee__user=self.request.user)
+        print(department)
         roles = Role.objects.all()
 
         context = {
             'form':form,
-            'departments': departments,
+            'department': department,
             'roles': roles,
         }
         return render(request, self.template_name, context)
@@ -153,7 +154,22 @@ class TaskUpdateView(LoginRequiredMixin,UpdateView):
     form_class = CreateTaskForm
     success_url = reverse_lazy('task:list')
     template_name = 'task/task_form.html'
-    extra_context={'departments': Department.objects.all(),'roles': Role.objects.all(),}
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Retrieve the task instance being updated
+        task = self.get_object()
+
+        # Get the department and role associated with the task
+        department = task.owner.department
+        role = task.category
+
+        # Add extra context
+        context['roles'] = Role.objects.all()
+        context['department'] = department
+        context['selected_role'] = role
+
+        return context
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

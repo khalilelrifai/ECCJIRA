@@ -22,34 +22,33 @@
             {% csrf_token %}
 
     <div class="row mb-5">
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             {{form.title|as_crispy_field}}
         </div>
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             {{form.concern_company|as_crispy_field}}
         </div>
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             {{form.target_date|as_crispy_field}}
         </div>
     </div>
     <div class="row mb-5">
         {% if request.user|has_group:"Admin" %} 
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             <label for="department">Select Department:</label>
-            <select name="department" class="form-select" id="departmentSelect">
+            <select name="department" class="form-select" id="departmentSelect" disabled >
                 <option value="">-- Select Department --</option>
-                {% for department in departments %}
-                    <option value="{{ department.id }}">{{ department.department }}</option>
-                {% endfor %}
+                
+                    <option value="{{ department.id }}" selected >{{ department }} </option>
+                
             </select>
         </div>
-
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             <label for="role">Select Role:</label>
             <select name="role" class="form-select" id="roleSelect">
                 <option value="">-- Select Role --</option>
                 {% for role in roles %}
-                    <option value="{{ role.id }}">{{ role.title }}</option>
+                    <option value="{{ role.id }}" {% if role.id == selected_role.id %}selected{% endif %}>{{ role.title }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -61,17 +60,16 @@
                     <!-- Assigned to checkboxes will be added here -->
                 </div>
         </div>
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             {{form.status|as_crispy_field}}
         </div>
     </div>
     <div class="row mb-5">
 
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             {{form.reviews|as_crispy_field}}
         </div>
-
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             {{form.remarks|as_crispy_field}}
         </div>
         
@@ -102,7 +100,7 @@
         const role = document.getElementById('roleSelect').value;
 
         if (department && role) {
-            fetch(`task/create/get_employees/?department=${department}&role=${role}`)
+            fetch(`get_employees/?department=${department}&role=${role}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
