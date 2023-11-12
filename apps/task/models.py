@@ -21,7 +21,7 @@ class Employee(Model):
     id=AutoField(primary_key=True,editable=False)
     user = OneToOneField(User,on_delete=CASCADE)
     department = ForeignKey(Department,on_delete=SET_NULL,null=True)
-    role = ForeignKey(Role,on_delete=SET_NULL,null=True)
+
 
 
     def __str__(self):
@@ -43,7 +43,7 @@ class Task(Model):
     owner = ForeignKey(Employee,on_delete=SET_NULL,null=True)
     status=CharField(max_length=50,choices=STATUS_CHOICES,default='On Hold')
     title = CharField(max_length=200)
-    created_date = DateField(auto_now_add=True)
+    created_date = DateTimeField(auto_now_add=True)
     target_date = DateField()
     remarks = TextField(blank=True)
     reviews = TextField(blank=True)

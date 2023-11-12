@@ -17,11 +17,11 @@ from .models import *
 
 def get_filtered_employees(request):
     department_id = request.GET.get('department')
-    role_id = request.GET.get('role')
+    
 
-    if department_id and role_id:
+    if department_id :
         try:
-            filtered_employees = Employee.objects.filter(department_id=department_id, role_id=role_id).values('id', 'user__first_name', 'user__last_name')
+            filtered_employees = Employee.objects.filter(department_id=department_id).values('id', 'user__first_name', 'user__last_name')
             # Filter the employees based on the department and role
 
             employees_list = list(filtered_employees)
@@ -190,19 +190,33 @@ class DashboardView(View):
 
     def get_context_data(self):
         # Fetch data for your dashboard
-        total_tasks = Task.objects.count()
-        completed_tasks = Task.objects.filter(status='Done').count()
-        inprogress_tasks = Task.objects.filter(status='In Progress').count()
-        in_progress = Task.objects.filter(status='In Progress')
-        employees_count = Employee.objects.count()
-        current_user_department = self.request.user.employee.department
-        team_members = Employee.objects.filter(department=current_user_department)
+        user = self.request.user
+        is_admin = user.groups.filter(name='Admin').exists()
+        last_month_start = timezone.now() - timedelta(days=30)
+        team_members = Employee.objects.filter(department=user.employee.department).exclude(id=user.id)
+        if is_admin:
+            # User is in admin group, can see all stats
+            
+            total_tasks = Task.objects.filter(created_date__gte=last_month_start).count()
+            completed_tasks = Task.objects.filter(status='Done', created_date__gte=last_month_start).count()
+            inprogress_tasks = Task.objects.filter(status='In Progress', created_date__gte=last_month_start).count()
+            in_progress = Task.objects.filter(status='In Progress')
+
+        else:
+            # User is a normal user, can only see their own stats
+            total_tasks = Task.objects.filter(created_date__gte=last_month_start, owner__user=user).count()
+            completed_tasks = Task.objects.filter(status='Done', created_date__gte=last_month_start, owner__user=user).count()
+            inprogress_tasks = Task.objects.filter(status='In Progress', created_date__gte=last_month_start, owner__user=user).count()
+            in_progress = Task.objects.filter(status='In Progress', owner__user=user)
+
+
+ 
+        
         context = {
             'total_tasks': total_tasks,
             'completed_tasks': completed_tasks,
             'inprogress_tasks': inprogress_tasks,
             'in_progress': in_progress,
-            'employees_count': employees_count,
             'team_members':team_members,
             # Add more data as needed
         }

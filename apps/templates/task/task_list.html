@@ -77,7 +77,7 @@
                             {% endfor %}</span></td>
                             <td><span class="fw-normal">{{task.category}}</span></td>     
                             {% endif %}                  
-                            <td><span class="fw-normal">{{task.created_date}}</span></td>
+                            <td><span class="fw-normal">{{ task.created_date|date:"d-M-y @ h:i A" }}</span></td>
                             <td><span class="fw-normal">{{task.concern_company}}</span></td>
                             <td><span class="fw-normal">{{task.target_date|naturalday}}</span></td>
                             <td>
