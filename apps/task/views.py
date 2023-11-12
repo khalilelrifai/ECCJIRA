@@ -193,7 +193,12 @@ class DashboardView(View):
         user = self.request.user
         is_admin = user.groups.filter(name='Admin').exists()
         last_month_start = timezone.now() - timedelta(days=30)
+        last_week_start = timezone.now() - timedelta(weeks=1)
         team_members = Employee.objects.filter(department=user.employee.department).exclude(id=user.id)
+        employee = Employee.objects.get(user=self.request.user)
+        last_assigned_tasks = Task.objects.filter(
+                Q(assigned_to=employee ) & Q(created_date__gte=last_week_start)
+        ).order_by('-created_date').distinct()
         if is_admin:
             # User is in admin group, can see all stats
             
@@ -204,10 +209,12 @@ class DashboardView(View):
 
         else:
             # User is a normal user, can only see their own stats
-            total_tasks = Task.objects.filter(created_date__gte=last_month_start, owner__user=user).count()
-            completed_tasks = Task.objects.filter(status='Done', created_date__gte=last_month_start, owner__user=user).count()
-            inprogress_tasks = Task.objects.filter(status='In Progress', created_date__gte=last_month_start, owner__user=user).count()
+            q=(Q(assigned_to=employee ) | Q(owner__user=user)) & Q(created_date__gte=last_month_start)
+            total_tasks = Task.objects.filter(q).count()
+            completed_tasks = Task.objects.filter(Q(status = 'Done') & q ).count()
+            inprogress_tasks = Task.objects.filter(Q(status = 'In Progress') & q).count()
             in_progress = Task.objects.filter(status='In Progress', owner__user=user)
+
 
 
  
@@ -218,6 +225,7 @@ class DashboardView(View):
             'inprogress_tasks': inprogress_tasks,
             'in_progress': in_progress,
             'team_members':team_members,
+            'last_assigned':last_assigned_tasks,
             # Add more data as needed
         }
         return context

@@ -18,7 +18,7 @@ class CreateTaskForm(forms.ModelForm):
             'remarks': forms.Textarea(attrs={'rows': '4'}),
             'reviews': forms.Textarea(attrs={'rows': '4'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
-            'target_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'date'})
+            'target_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
         }
         
         
