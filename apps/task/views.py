@@ -183,109 +183,32 @@ class TaskUpdateView(LoginRequiredMixin,UpdateView):
         return form
     
     
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     x = get_object_or_404 (Job_title,employee__user=self.request.user)
-    #     context['job_title'] = x
-    #     context['department'] = x.department
-    #     context['form'].fields['task_type'].queryset = Task_type.objects.filter(job_title_id=x.id)
-    #     return context
-
-
-# class ReportDeleteView(LoginRequiredMixin,DeleteView):
-#     model = Report
-#     success_url = reverse_lazy('reports:list')
+   
     
-    
-class DirectorView(LoginRequiredMixin, View):
-    paginate_by = 10
-    template_name = 'task/director_list.html'
+class DashboardView(View):
+    template_name = 'task/main.html'
+
+    def get_context_data(self):
+        # Fetch data for your dashboard
+        total_tasks = Task.objects.count()
+        completed_tasks = Task.objects.filter(status='Done').count()
+        inprogress_tasks = Task.objects.filter(status='In Progress').count()
+        in_progress = Task.objects.filter(status='In Progress')
+        employees_count = Employee.objects.count()
+        current_user_department = self.request.user.employee.department
+        team_members = Employee.objects.filter(department=current_user_department)
+        context = {
+            'total_tasks': total_tasks,
+            'completed_tasks': completed_tasks,
+            'inprogress_tasks': inprogress_tasks,
+            'in_progress': in_progress,
+            'employees_count': employees_count,
+            'team_members':team_members,
+            # Add more data as needed
+        }
+        return context
 
     def get(self, request):
-        search_value = request.GET.get('search')
- 
-        form = SearchFilterForm(request.GET or None)
-        form.fields['search'].initial = search_value
-        x = get_object_or_404(Job_title, employee__user=self.request.user)
-        
-        if form.is_valid():
-            task_list = form.filter_task().exclude(owner__user=request.user)
-            task_list = task_list.filter(task_type__job_title=x)
-        else:
-            task_list = Task.objects.filter(task_type__job_title=x).exclude(owner__user=request.user).order_by('-created_at')
-        
-        
-        
-        paginator = Paginator(task_list, self.paginate_by)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-
-        context = {
-            'page_obj': page_obj,
-            'form': form,
-            
-        }
-        
-
+        context = self.get_context_data()
         return render(request, self.template_name, context)
-
-        
-           
-        
-# class HRView(LoginRequiredMixin, View):
-#     template_name = 'reports/hr.html'
-#     paginate_by = 10
-#     def get(self, request):
-#         form = ReportFilterForm(request.GET or None)
-#         department = Department.objects.all().values_list('department', flat=True)
-#         report_list = Report.objects.filter(status='Approved').order_by('-created_at')
-
-#         if form.is_valid():
-#             report_list = form.filter_reports()
-            
-#         paginator = Paginator(report_list, self.paginate_by)
-#         page_number = request.GET.get('page')
-#         page_obj = paginator.get_page(page_number)
-        
-
-#         context = {'form': form, 'page_obj': page_obj, 'department': department}
-#         return render(request, self.template_name, context)
-    
-# class ProfileView(LoginRequiredMixin,ListView):
-#     model=Report
-#     template_name='reports/profile.html'
-    
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         pk = self.kwargs.get('pk')
-#         reports=Report.objects.filter(owner_id=pk).order_by('-created_at')
-        
-#       # Retrieve last week's records
-#         last_week_start = timezone.now() - timedelta(weeks=1)
-#         last_week_reports = Report.objects.filter(owner_id=pk, created_at__gte=last_week_start).count()
-#         context['week'] = last_week_reports
-
-#         # Retrieve last month's records
-#         last_month_start = timezone.now() - timedelta(days=30)
-#         last_month_reports = Report.objects.filter(owner_id=pk, created_at__gte=last_month_start).count()
-#         context['month'] = last_month_reports
-
-#         # Retrieve today's records
-#         today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-#         today_reports = Report.objects.filter(owner_id=pk, created_at__gte=today_start).count()
-#         context['today'] = today_reports
-#         context['report_list']=reports
-#         context['name'] = reports.first().owner.fullname if reports.exists() else None
-#         return context
-        
- 
-
-# def approve(request,pk):
-#     Report.objects.filter(id=pk).update(status='Approved')
-#     return redirect('reports:director')
-    
-
-    
-    
     

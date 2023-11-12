@@ -12,37 +12,12 @@ app_name='task'
 urlpatterns = [
 
 
-    path('', login_required(TemplateView.as_view(template_name='task/main.html')), name='main'),
+    path('main', views.DashboardView.as_view(), name='main'),
     path('create',views.CreateTask.as_view(),name='create'),
     path('list',views.TaskListView.as_view(),name='list'),
     path('get_employees/', views.get_filtered_employees, name='get_employees'),
     path('list/detail/<int:pk>',views.TaskDetailView.as_view(),name='L-detail'),
-    # path('director/detail/<int:pk>',views.ReportDetailView.as_view(),name='D-detail'),
     path('list/edit/<int:pk>',views.TaskUpdateView.as_view(),name='edit'),
     path('list/delete/<int:pk>',views.TaskDeleteView.as_view(),name='delete'),
-    path('director',views.DirectorView.as_view(),name='director'),
-    # path('approve/<int:pk>',views.approve,name='approve'),
-    # path('hr',views.HRView.as_view(),name='hr'),
-    # path('hr/detail/<int:pk>',views.ReportDetailView.as_view(),name='H-detail'),
-    # path('hr/profile/<int:pk>',views.ProfileView.as_view(),name='profile'),
-    
-    # path('search',views.ReportsSearchList.as_view(),name='search'),
 ]
-    # # Matches any html file
-    # path('reportform/', views.reportform, name='reportform'),
-    # path('submitted-report/<int:page>/',login_required(views.ReportsListView.as_view()), name='submitted'),
     
-    # path('submitted-report/view/<int:pk>', login_required(views.DetailView.as_view()), name='view'),
-    
-    # path('profile/edit/<id>', views.edit_report, name='edit_profile'),
-    # path('profile/view/<int:pk>', login_required(views.DetailView.as_view()), name='view_profile'),
-    # path('profile/<int:page>/', login_required(views.ReportsListView.as_view()), name='profile'),
-    # path('all/', login_required(views.ReportsListView.as_view()), name='all'),
-    # ]
-#     path(
-#     "terms.json",
-#     views.listing_api,
-#     name="terms-api"
-# ),
-#     path("faux/",AllKeywordsView.as_view(template_name="home/test.html")),
-
