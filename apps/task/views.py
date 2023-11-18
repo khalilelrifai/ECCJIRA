@@ -71,14 +71,12 @@ class CreateTask(LoginRequiredMixin,View):
         assigned_to = request.POST.getlist('assigned_to')
         
         # Update 'data' with additional form fields and POST data
-        if Group.objects.filter(name='Admin').exists() and request.user.groups.filter(name='Admin').exists():
+        if Group.objects.filter(name='User').exists() and request.user.groups.filter(name='User').exists():
+            assigned_to = [current_employee]
+
             data.department_id = department
             data.role_id = role
             data.category_id =role
-            
-        else:
-            data.category_id = current_employee.role_id
-            assigned_to = [current_employee]
 
 
             

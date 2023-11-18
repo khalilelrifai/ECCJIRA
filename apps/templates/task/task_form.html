@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="row mb-5">
-        {% if request.user|has_group:"Admin" %} 
+
         <div class="col-sm-3">
             <label for="department">Select Department:</label>
             <select name="department" class="form-select" id="departmentSelect" disabled >
@@ -52,7 +52,7 @@
                 {% endfor %}
             </select>
         </div>
-        {% endif %}
+        {% if request.user|has_group:"Admin" %} 
         <div class="col-sm-3" id="assignedToSection" style="display: none;">
 
                 <p>Assign To:</p>
@@ -60,6 +60,7 @@
                     <!-- Assigned to checkboxes will be added here -->
                 </div>
         </div>
+        {% endif %}
         <div class="col-sm-3">
             {{form.status|as_crispy_field}}
         </div>
